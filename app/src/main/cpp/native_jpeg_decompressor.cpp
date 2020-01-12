@@ -42,6 +42,7 @@ Java_com_wsy_libjpegturbo_JpegDecompressor_nativeDestroy(
     int destroyResult = decompressor->destroy();
     if (destroyResult == 0) {
         env->SetLongField(jDecompressor, handleId, 0);
+        delete decompressor;
     }
     return destroyResult;
 }
