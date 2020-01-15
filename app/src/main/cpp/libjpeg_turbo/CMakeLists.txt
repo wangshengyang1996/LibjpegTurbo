@@ -151,7 +151,7 @@ option(WITH_ARITH_DEC "Include arithmetic decoding support when emulating the li
 boolean_number(WITH_ARITH_DEC)
 option(WITH_ARITH_ENC "Include arithmetic encoding support when emulating the libjpeg v6b API/ABI" TRUE)
 boolean_number(WITH_ARITH_ENC)
-option(WITH_JAVA "Build Java wrapper for the TurboJPEG API library (implies ENABLE_SHARED=1)" FALSE)
+option(WITH_JAVA "Build Java wrapper for the TurboJPEG API library (implies ENABLE_SHARED=1)" TRUE)
 boolean_number(WITH_JAVA)
 option(WITH_JPEG7 "Emulate libjpeg v7 API/ABI (this makes ${CMAKE_PROJECT_NAME} backward-incompatible with libjpeg v6b)" FALSE)
 boolean_number(WITH_JPEG7)
@@ -543,9 +543,9 @@ else()
   add_library(simd OBJECT jsimd_none.c)
 endif()
 
-if(WITH_JAVA)
-  add_subdirectory(java)
-endif()
+#if(WITH_JAVA)
+#  add_subdirectory(java)
+#endif()
 
 if(ENABLE_SHARED)
   add_subdirectory(sharedlib)
@@ -786,32 +786,32 @@ else()
   set(MD5_JPEG_CROP b4197f377e621c4e9b1d20471432610d)
 endif()
 
-if(WITH_JAVA)
-  add_test(TJUnitTest
-    ${Java_JAVA_EXECUTABLE} ${JAVAARGS} -cp java/turbojpeg.jar
-      -Djava.library.path=${CMAKE_CURRENT_BINARY_DIR}/${OBJDIR}
-      TJUnitTest)
-  add_test(TJUnitTest-yuv
-    ${Java_JAVA_EXECUTABLE} ${JAVAARGS} -cp java/turbojpeg.jar
-      -Djava.library.path=${CMAKE_CURRENT_BINARY_DIR}/${OBJDIR}
-      TJUnitTest -yuv)
-  add_test(TJUnitTest-yuv-nopad
-    ${Java_JAVA_EXECUTABLE} ${JAVAARGS} -cp java/turbojpeg.jar
-      -Djava.library.path=${CMAKE_CURRENT_BINARY_DIR}/${OBJDIR}
-      TJUnitTest -yuv -noyuvpad)
-  add_test(TJUnitTest-bi
-    ${Java_JAVA_EXECUTABLE} ${JAVAARGS} -cp java/turbojpeg.jar
-      -Djava.library.path=${CMAKE_CURRENT_BINARY_DIR}/${OBJDIR}
-      TJUnitTest -bi)
-  add_test(TJUnitTest-bi-yuv
-    ${Java_JAVA_EXECUTABLE} ${JAVAARGS} -cp java/turbojpeg.jar
-      -Djava.library.path=${CMAKE_CURRENT_BINARY_DIR}/${OBJDIR}
-      TJUnitTest -bi -yuv)
-  add_test(TJUnitTest-bi-yuv-nopad
-    ${Java_JAVA_EXECUTABLE} ${JAVAARGS} -cp java/turbojpeg.jar
-      -Djava.library.path=${CMAKE_CURRENT_BINARY_DIR}/${OBJDIR}
-      TJUnitTest -bi -yuv -noyuvpad)
-endif()
+#if(WITH_JAVA)
+#  add_test(TJUnitTest
+#    ${Java_JAVA_EXECUTABLE} ${JAVAARGS} -cp java/turbojpeg.jar
+#      -Djava.library.path=${CMAKE_CURRENT_BINARY_DIR}/${OBJDIR}
+#      TJUnitTest)
+#  add_test(TJUnitTest-yuv
+#    ${Java_JAVA_EXECUTABLE} ${JAVAARGS} -cp java/turbojpeg.jar
+#      -Djava.library.path=${CMAKE_CURRENT_BINARY_DIR}/${OBJDIR}
+#      TJUnitTest -yuv)
+#  add_test(TJUnitTest-yuv-nopad
+#    ${Java_JAVA_EXECUTABLE} ${JAVAARGS} -cp java/turbojpeg.jar
+#      -Djava.library.path=${CMAKE_CURRENT_BINARY_DIR}/${OBJDIR}
+#      TJUnitTest -yuv -noyuvpad)
+#  add_test(TJUnitTest-bi
+#    ${Java_JAVA_EXECUTABLE} ${JAVAARGS} -cp java/turbojpeg.jar
+#      -Djava.library.path=${CMAKE_CURRENT_BINARY_DIR}/${OBJDIR}
+#      TJUnitTest -bi)
+#  add_test(TJUnitTest-bi-yuv
+#    ${Java_JAVA_EXECUTABLE} ${JAVAARGS} -cp java/turbojpeg.jar
+#      -Djava.library.path=${CMAKE_CURRENT_BINARY_DIR}/${OBJDIR}
+#      TJUnitTest -bi -yuv)
+#  add_test(TJUnitTest-bi-yuv-nopad
+#    ${Java_JAVA_EXECUTABLE} ${JAVAARGS} -cp java/turbojpeg.jar
+#      -Djava.library.path=${CMAKE_CURRENT_BINARY_DIR}/${OBJDIR}
+#      TJUnitTest -bi -yuv -noyuvpad)
+#endif()
 
 set(TEST_LIBTYPES "")
 if(ENABLE_SHARED)
@@ -1390,10 +1390,10 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.ijg
   ${CMAKE_CURRENT_SOURCE_DIR}/structure.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/usage.txt ${CMAKE_CURRENT_SOURCE_DIR}/wizard.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
-if(WITH_JAVA)
-  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/java/TJExample.java
-    DESTINATION ${CMAKE_INSTALL_DOCDIR})
-endif()
+#if(WITH_JAVA)
+#  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/java/TJExample.java
+#    DESTINATION ${CMAKE_INSTALL_DOCDIR})
+#endif()
 
 if(UNIX OR MINGW)
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cjpeg.1

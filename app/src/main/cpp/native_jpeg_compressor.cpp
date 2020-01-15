@@ -96,6 +96,43 @@ Java_com_wsy_libjpegturbo_JpegCompressor_bitmapToJpeg(
         free(jpegBuff);
         return jpegByteArray;
     }
+}
+extern "C" JNIEXPORT jbyteArray JNICALL
+Java_com_wsy_libjpegturbo_JpegCompressor_i420ToJpeg(
+        JNIEnv *env,
+        jobject jCompressor,
+        jbyteArray i420Array, jint width, jint height,
+        jint quality) {
+    if (i420Array == nullptr) {
+        return nullptr;
+    }
+    jclass compressorClazz = env->GetObjectClass(jCompressor);
+    jfieldID handleId = env->GetFieldID(compressorClazz, "nativeHandle", "J");
+    jlong handle = env->GetLongField(jCompressor, handleId);
+    if (handle == 0) {
+        LOGE("not initialized!");
+        return nullptr;
+    }
+    JpegCompressor *jpegCompressor = reinterpret_cast<JpegCompressor *>(handle);
 
+    jbyte *i420Data = env->GetByteArrayElements(i420Array, JNI_FALSE);
 
+    unsigned char *jpegBuff;
+    unsigned long jpegSize = 0;
+
+    int compressResult = jpegCompressor->compressI420ToJpeg(
+            reinterpret_cast<const unsigned char *>(i420Data), width, height, &jpegBuff, &jpegSize,
+            quality, 0);
+    env->ReleaseByteArrayElements(i420Array, i420Data, JNI_FALSE);
+
+    if (compressResult != 0) {
+        LOGE("compress failed , errorCode is %d", compressResult);
+        return nullptr;
+    } else {
+        jbyteArray jpegByteArray = env->NewByteArray(jpegSize);
+        env->SetByteArrayRegion(jpegByteArray, 0, jpegSize,
+                                reinterpret_cast<const jbyte *>(jpegBuff));
+        free(jpegBuff);
+        return jpegByteArray;
+    }
 }

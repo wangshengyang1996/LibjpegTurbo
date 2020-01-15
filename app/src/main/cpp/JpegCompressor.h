@@ -17,6 +17,9 @@ public:
     int compressRgba8888ToJpeg(const unsigned char *srcBuf, int width, int height,
                    unsigned char **jpegBuf, unsigned long *jpegSize, int jpegSubsamp, int jpegQual,
                    int flags);
+    int compressI420ToJpeg(const unsigned char *srcBuf, int width, int height,
+                           unsigned char **jpegBuf, unsigned long *jpegSize,
+                           int jpegQual, int flags);
 
     int destroy();
 

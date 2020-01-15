@@ -10,6 +10,7 @@ public class JpegDecompressor {
     private native boolean nativeCreate();
     private native boolean nativeDestroy();
     public native Bitmap jpegToBitmap(byte[]jpeg);
+    public native byte[] jpegToI420(byte[]jpeg);
 
 
     public boolean createDecompressor(){

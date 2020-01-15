@@ -8,13 +8,15 @@
     tools:context=".MainActivity">
 
     <ImageView
+        android:background="@color/colorPrimary"
         android:id="@+id/iv_show_image_libjpeg_turbo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="500px"
+        android:layout_height="312px" />
 
     <ImageView
+        android:background="@color/colorPrimary"
         android:id="@+id/iv_show_image_system"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="500px"
+        android:layout_height="312px" />
 
 </LinearLayout>

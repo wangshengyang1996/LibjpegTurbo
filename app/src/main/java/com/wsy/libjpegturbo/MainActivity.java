@@ -2,14 +2,20 @@ package com.wsy.libjpegturbo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.TextView;
+
+import com.arcsoft.imageutil.ArcSoftImageFormat;
+import com.arcsoft.imageutil.ArcSoftImageUtil;
+import com.arcsoft.imageutil.ArcSoftImageUtilError;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -22,13 +28,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        try {
+            Log.i(TAG, "onCreate: " + getResources().getString(getPackageManager().getPackageInfo(getPackageName(),0).applicationInfo.labelRes));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
         imageViewForLibjpegTurbo = findViewById(R.id.iv_show_image_libjpeg_turbo);
         imageViewForSystem = findViewById(R.id.iv_show_image_system);
-        test();
+        testBitmapJpegTransform();
+        testNv21JpegTransform();
+        try {
+            testNv21JpegTransformSrcJni();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
-    private void test() {
+
+    private void testBitmapJpegTransform() {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_the_flash);
         JpegCompressor jpegCompressor = new JpegCompressor();
         JpegDecompressor jpegDecompressor = new JpegDecompressor();
@@ -71,5 +89,48 @@ public class MainActivity extends AppCompatActivity {
 
         jpegDecompressor.destroyDecompressor();
         jpegCompressor.destroyCompressor();
+    }
+
+    private void testNv21JpegTransformSrcJni() throws IOException {
+
+    }
+
+    private void testNv21JpegTransform() {
+        try {
+            InputStream stream = getAssets().open("flash_500x312.NV21");
+            byte[] nv21 = new byte[stream.available()];
+            stream.read(nv21);
+            stream.close();
+            JpegCompressor jpegCompressor = new JpegCompressor();
+            JpegDecompressor jpegDecompressor = new JpegDecompressor();
+            if (jpegCompressor.createCompressor() && jpegDecompressor.createDecompressor()) {
+                byte[] i420 = new byte[nv21.length];
+                ArcSoftImageUtil.transformImage(nv21, i420, 500, 312, ArcSoftImageFormat.NV21, ArcSoftImageFormat.I420);
+                long start = System.currentTimeMillis();
+                byte[] jpeg = jpegCompressor.i420ToJpeg(i420, 500, 312, 100);
+                long cost = System.currentTimeMillis() - start;
+                Log.i(TAG, "jpegCompressor.i420ToJpeg cost is : " + cost);
+                start = System.currentTimeMillis();
+                i420 = jpegDecompressor.jpegToI420(jpeg);
+                cost = System.currentTimeMillis() - start;
+                Log.i(TAG, "jpegCompressor.jpegToI420 cost is : " + cost);
+                Bitmap bitmap = Bitmap.createBitmap(500, 312, Bitmap.Config.ARGB_8888);
+                int code = ArcSoftImageUtil.imageDataToBitmap(i420, bitmap, ArcSoftImageFormat.I420);
+                if (code != ArcSoftImageUtilError.CODE_SUCCESS) {
+                    Log.e(TAG, "testNv21JpegTransform: transform failed");
+                    return;
+                }
+
+                Log.i(TAG, "testNv21JpegTransform: " + bitmap.getWidth() + "x" + bitmap.getHeight());
+                imageViewForLibjpegTurbo.setImageBitmap(bitmap);
+
+            }
+            jpegDecompressor.destroyDecompressor();
+            jpegCompressor.destroyCompressor();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

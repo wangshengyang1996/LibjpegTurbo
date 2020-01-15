@@ -59,6 +59,8 @@ public class JpegCompressor {
 
     public native byte[] bitmapToJpeg(Bitmap bitmap, int sample, int quality);
 
+    public native byte[] i420ToJpeg(byte[] nv21, int width, int height, int quality);
+
 
     public boolean createCompressor() {
         return nativeCreate();
